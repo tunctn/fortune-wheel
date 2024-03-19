@@ -7,20 +7,30 @@ import { CirclePlus, MinusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Control, type UseFieldArrayReturn } from "react-hook-form";
+import { toast } from "sonner";
 import { getRandomColor } from "./colors";
 import { FortuneWheelForm } from "./fortune-wheel";
 
 export const List = ({
   control,
   fieldArray,
+  isSpinning,
 }: {
   control: Control<FortuneWheelForm, any>;
   fieldArray: UseFieldArrayReturn<FortuneWheelForm, "options", "id">;
+  isSpinning: boolean;
 }) => {
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const { fields, remove, append, insert, update } = fieldArray;
 
   const handleRemove = (index: number) => {
+    if (isSpinning) {
+      toast.info(`Wait until the winner of this round is announced!`, {
+        icon: "🏅",
+      });
+      return;
+    }
+
     // If last 2 item, don't remove
     if (fields.length === 2) {
       return;
@@ -29,6 +39,12 @@ export const List = ({
   };
 
   const handleAdd = () => {
+    if (isSpinning) {
+      toast.info(`Wait until the winner of this round is announced!`, {
+        icon: "🏅",
+      });
+      return;
+    }
     append({ option: "", color: getRandomColor() });
   };
 
@@ -84,6 +100,7 @@ export const List = ({
                     <FormControl>
                       <Input
                         className="w-full"
+                        disabled={isSpinning}
                         {...field}
                         onFocus={() => setFocusedIndex(index)}
                         onBlur={() => setFocusedIndex(null)}

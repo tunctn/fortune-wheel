@@ -1,7 +1,9 @@
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,9 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="">
       <body className={cn(inter.className, "antialiased")}>
-        <div vaul-drawer-wrapper="" className="min-h-[100vh] bg-white">
-          {children}
-        </div>
+        <Providers>
+          <div vaul-drawer-wrapper="" className="min-h-[100vh] bg-white">
+            {children}
+            <Toaster />
+          </div>
+        </Providers>
       </body>
     </html>
   );
