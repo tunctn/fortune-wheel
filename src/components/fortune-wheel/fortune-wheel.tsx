@@ -1,200 +1,18 @@
 "use client";
 
 import { Form } from "@/components/ui/form";
-
 import { cn } from "@/lib/utils";
+import { Volume2, VolumeX } from "lucide-react";
+import { useRef, useState } from "react";
 import Confetti from "react-dom-confetti";
-
-import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { Drawer } from "vaul";
+import { Button } from "../ui/button";
 import { getRandomColor } from "./colors";
 import { List } from "./list";
 import { Spinner } from "./spinner";
 import { Slot } from "./types";
 import { useFortuneWheel } from "./use-fortune-wheel";
-
-const DEFAULT_OPTIONS = [
-  { option: "a24" },
-  { option: "adidas" },
-  { option: "adidas originals" },
-  { option: "adobe" },
-  { option: "airbnb" },
-  { option: "amazon" },
-  { option: "american express" },
-  { option: "android" },
-  { option: "apple" },
-  { option: "arsenal" },
-  { option: "audi" },
-  { option: "bafta" },
-  { option: "barilla" },
-  { option: "bbc" },
-  { option: "beats by dre" },
-  { option: "bentley" },
-  { option: "bing" },
-  { option: "bmw" },
-  { option: "borussia dortmund" },
-  { option: "bose" },
-  { option: "budweiser" },
-  { option: "bugatti" },
-  { option: "burberry" },
-  { option: "burger king" },
-  { option: "bvlgari" },
-  { option: "calvin klein" },
-  { option: "canon" },
-  { option: "cat" },
-  { option: "champions leauge" },
-  { option: "chanel" },
-  { option: "chatgpt" },
-  { option: "chevrolet" },
-  { option: "chick fil a" },
-  { option: "chrome" },
-  { option: "cisco" },
-  { option: "citibank" },
-  { option: "clubhouse" },
-  { option: "cnn" },
-  { option: "coca cola" },
-  { option: "coca cola zero" },
-  { option: "colgate" },
-  { option: "converse" },
-  { option: "crocs" },
-  { option: "dallas cowboys" },
-  { option: "dhl" },
-  { option: "discord" },
-  { option: "disney" },
-  { option: "dolce & gabbana" },
-  { option: "dominos" },
-  { option: "doritos" },
-  { option: "dove" },
-  { option: "dropbox" },
-  { option: "duolingo" },
-  { option: "ea" },
-  { option: "ebay" },
-  { option: "efes malt" },
-  { option: "espn" },
-  { option: "euroleague" },
-  { option: "facebook" },
-  { option: "fc bayern munich" },
-  { option: "fedex" },
-  { option: "fenerbahce" },
-  { option: "ferrari" },
-  { option: "ford" },
-  { option: "fortnite" },
-  { option: "gatorade" },
-  { option: "gilette" },
-  { option: "github" },
-  { option: "golden state warriors" },
-  { option: "google" },
-  { option: "gucci" },
-  { option: "h&m" },
-  { option: "harley davidson" },
-  { option: "hbo" },
-  { option: "heineken" },
-  { option: "honda" },
-  { option: "hp" },
-  { option: "hsbc" },
-  { option: "hyundai" },
-  { option: "ibm" },
-  { option: "ikea" },
-  { option: "in n out" },
-  { option: "instagram" },
-  { option: "intel" },
-  { option: "iphone" },
-  { option: "jack daniels" },
-  { option: "jeep" },
-  { option: "kellogg's" },
-  { option: "kfc" },
-  { option: "kindle" },
-  { option: "kitkat" },
-  { option: "lakers" },
-  { option: "lamborghini" },
-  { option: "lego" },
-  { option: "levi's" },
-  { option: "lg" },
-  { option: "linkedin" },
-  { option: "liverpool" },
-  { option: "lotus" },
-  { option: "louis vuitton" },
-  { option: "marvel" },
-  { option: "mastercard" },
-  { option: "mcdonald's" },
-  { option: "mcdonalds" },
-  { option: "mercedes" },
-  { option: "mercedes-benz" },
-  { option: "mgm studios" },
-  { option: "microsoft" },
-  { option: "milka" },
-  { option: "minecrarft" },
-  { option: "mini cooper" },
-  { option: "mozilla firefox" },
-  { option: "nba" },
-  { option: "nescafe" },
-  { option: "nestle" },
-  { option: "netflix" },
-  { option: "new york yankees" },
-  { option: "nike" },
-  { option: "nikon" },
-  { option: "nintendo" },
-  { option: "nokia" },
-  { option: "nvidia" },
-  { option: "off white" },
-  { option: "olympus" },
-  { option: "onlyfans" },
-  { option: "oracle" },
-  { option: "oreo" },
-  { option: "oscars" },
-  { option: "pepsi" },
-  { option: "philips" },
-  { option: "pirelli" },
-  { option: "playstation" },
-  { option: "porsche" },
-  { option: "prada" },
-  { option: "pringles" },
-  { option: "puma" },
-  { option: "quiksilver" },
-  { option: "ralph lauren" },
-  { option: "ray-ban" },
-  { option: "real madrid" },
-  { option: "red bull" },
-  { option: "reebok" },
-  { option: "rolex" },
-  { option: "rolls-royce" },
-  { option: "samsung" },
-  { option: "skype" },
-  { option: "sony" },
-  { option: "spotify" },
-  { option: "starbucks" },
-  { option: "subway" },
-  { option: "supreme" },
-  { option: "swatch" },
-  { option: "tag heuer" },
-  { option: "target" },
-  { option: "tesla" },
-  { option: "tiffany & co." },
-  { option: "tiktok" },
-  { option: "tommy hilfiger" },
-  { option: "toyota" },
-  { option: "twitch" },
-  { option: "twitter" },
-  { option: "uber" },
-  { option: "ups" },
-  { option: "vans" },
-  { option: "vercel" },
-  { option: "versace" },
-  { option: "virgin" },
-  { option: "visa" },
-  { option: "vogue" },
-  { option: "volkswagen" },
-  { option: "volvo" },
-  { option: "walmart" },
-  { option: "warner bros" },
-  { option: "warner bros." },
-  { option: "whatsapp" },
-  { option: "windows" },
-  { option: "xbox" },
-  { option: "yahoo" },
-  { option: "youtube" },
-  { option: "zara" },
-];
 
 export type FortuneWheelForm = {
   options: {
@@ -214,24 +32,65 @@ export const FortuneWheel = () => {
   });
   const fieldArray = useFieldArray({ control: form.control, name: "options" });
 
-  const slots: Slot[] = form.watch("options").map((o) => {
-    return { color: o.color, value: o.option };
-  });
+  const slots: Slot[] = form
+    .watch("options")
+    .filter((o) => o.option !== "")
+    .map((o) => {
+      return { color: o.color, value: o.option };
+    });
+
+  const [canMakeSound, setCanMakeSound] = useState<boolean>(true);
+  const wheel1Ref = useRef<HTMLAudioElement>(null);
+  const wheel2Ref = useRef<HTMLAudioElement>(null);
+  const wheel3Ref = useRef<HTMLAudioElement>(null);
+  const wheel4Ref = useRef<HTMLAudioElement>(null);
+
+  const confettiSound1Ref = useRef<HTMLAudioElement>(null);
+  const confettiSound2Ref = useRef<HTMLAudioElement>(null);
 
   const [lastWinner, setLastWinner] = useState<string>("");
+
+  const onSpinTouchEdge = () => {
+    const sounds = [1, 2, 3, 4];
+    const rand = sounds[Math.floor(Math.random() * sounds.length)];
+    const audio = [wheel1Ref, wheel2Ref, wheel3Ref, wheel4Ref][rand - 1];
+    if (canMakeSound) audio.current?.play();
+  };
+
+  const onSpinStart = () => {
+    setLastWinner("");
+  };
+
+  const onSpinEnd = (winner: string) => {
+    setLastWinner(winner);
+    if (canMakeSound) {
+      confettiSound1Ref.current?.play();
+      setTimeout(() => {
+        confettiSound2Ref.current?.play();
+      }, 200);
+    }
+  };
+
   const { start, isSpinning } = useFortuneWheel({
     slots: slots,
-    onSpinStart: () => {
-      setLastWinner("");
-    },
-    onSpinEnd: (winner) => {
-      setLastWinner(winner);
-    },
+    onSpinTouchEdge,
+    onSpinStart,
+    onSpinEnd,
   });
   const confetti = lastWinner !== "";
+
   return (
     <div className="flex h-[100dvh] w-full justify-between gap-2 overflow-hidden p-3">
-      <div className="relative flex h-full flex-grow items-center justify-center py-4">
+      <Button
+        className="absolute left-2 top-2 z-[1]"
+        size="icon"
+        variant="outline"
+        onClick={() => setCanMakeSound((prev) => !prev)}
+      >
+        {canMakeSound ? <Volume2 /> : <VolumeX />}
+      </Button>
+
+      <div className="relative flex h-full flex-grow items-center  justify-center py-4">
         <div className="flex h-full max-h-[500px] w-full ">
           <Spinner slots={slots} start={start} isSpinning={isSpinning} />
 
@@ -254,10 +113,8 @@ export const FortuneWheel = () => {
           </div>
           <div
             className={cn(
-              "absolute bottom-2 left-1/2 -translate-x-1/2 text-center opacity-100 transition-all",
-              {
-                "opacity-0": isSpinning || lastWinner === "",
-              },
+              "absolute bottom-[50px] left-1/2 -translate-x-1/2 text-center opacity-100 transition-all lg:bottom-2",
+              { "opacity-0": isSpinning || lastWinner === "" },
             )}
           >
             <div className="text-xs font-semibold text-blue-600">Winner</div>
@@ -266,11 +123,44 @@ export const FortuneWheel = () => {
         </div>
       </div>
 
-      <Form {...form}>
-        <form>
-          <List control={form.control} fieldArray={fieldArray} />
-        </form>
-      </Form>
+      {canMakeSound && (
+        <>
+          <audio ref={confettiSound1Ref} src={"/audios/confetti.mp3"} />
+          <audio ref={confettiSound2Ref} src={"/audios/confetti.mp3"} />
+          <audio ref={wheel1Ref} src={`/audios/wheel-1.mp3`} />
+          <audio ref={wheel2Ref} src={`/audios/wheel-2.mp3`} />
+          <audio ref={wheel3Ref} src={`/audios/wheel-3.mp3`} />
+          <audio ref={wheel4Ref} src={`/audios/wheel-4.mp3`} />
+        </>
+      )}
+
+      <div className="fixed bottom-2 left-0 flex w-full items-center justify-center lg:hidden ">
+        <Drawer.Root shouldScaleBackground>
+          <Drawer.Trigger asChild>
+            <Button className="w-full max-w-[300px]">New option</Button>
+          </Drawer.Trigger>
+          <Drawer.Portal>
+            <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+            <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-zinc-100">
+              <div className="absolute left-0 top-0 h-full w-full flex-1 rounded-t-[10px] bg-white p-4">
+                <Form {...form}>
+                  <form className="h-full w-full">
+                    <List control={form.control} fieldArray={fieldArray} />
+                  </form>
+                </Form>
+              </div>
+            </Drawer.Content>
+          </Drawer.Portal>
+        </Drawer.Root>
+      </div>
+
+      <div className="hidden h-full lg:block ">
+        <Form {...form}>
+          <form className="h-full w-full">
+            <List control={form.control} fieldArray={fieldArray} />
+          </form>
+        </Form>
+      </div>
     </div>
   );
 };

@@ -28,7 +28,7 @@ export const Spinner = ({ slots, start, isSpinning }: SpinnerProps) => {
       <div
         id="spin_wrapper"
         ref={ref}
-        className="absolute flex aspect-square w-full items-center justify-center  lg:h-full lg:w-auto"
+        className="absolute flex  aspect-square  max-h-[500px] w-full max-w-[500px] items-center justify-center lg:h-full lg:w-auto"
       >
         <div className="relative flex aspect-square h-full w-full items-center justify-center">
           <Button
@@ -40,7 +40,7 @@ export const Spinner = ({ slots, start, isSpinning }: SpinnerProps) => {
           </Button>
 
           <div
-            className="h-full rounded-full border-2 border-white"
+            className="h-full w-full rounded-full border-2 border-white"
             style={{
               boxShadow:
                 "0 0 10px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.05)",
@@ -49,23 +49,25 @@ export const Spinner = ({ slots, start, isSpinning }: SpinnerProps) => {
             {mounted && <SpinnerSvg slots={slots} />}
           </div>
 
-          <div className="absolute left-1/2 top-0 -mt-5 -translate-x-1/2 text-rose-600">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="48"
-              height="48"
-              fill="currentColor"
-              viewBox="0 0 16 16"
-              stroke="#ffffff"
-              strokeWidth={1}
-              strokeLinejoin="round"
-              style={{
-                filter:
-                  "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1)) drop-shadow(0 0 20px rgba(0, 0, 0, 0.05))",
-              }}
-            >
-              <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
-            </svg>
+          <div className="absolute left-1/2 top-0 -mt-5 origin-bottom -translate-x-1/2">
+            <div className=" text-rose-600" id="spin-arrow">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                stroke="#ffffff"
+                strokeWidth={1}
+                strokeLinejoin="round"
+                style={{
+                  filter:
+                    "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1)) drop-shadow(0 0 20px rgba(0, 0, 0, 0.05))",
+                }}
+              >
+                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>

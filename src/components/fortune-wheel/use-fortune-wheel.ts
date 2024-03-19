@@ -12,6 +12,7 @@ interface UseFortuneWheelProps {
   minDuration?: number;
   maxDuration?: number;
 
+  onSpinTouchEdge: () => void;
   onSpinStart: () => void;
   onSpinEnd: (value: string) => void;
 }
@@ -19,11 +20,12 @@ interface UseFortuneWheelProps {
 export const useFortuneWheel = ({
   slots,
   speed = 0,
-  spinSpeed = 10,
-  minDuration = 200,
-  maxDuration = 3000,
+  spinSpeed = 15,
+  minDuration = 4000,
+  maxDuration = 7000,
   onSpinStart,
   onSpinEnd,
+  onSpinTouchEdge,
 }: UseFortuneWheelProps) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const degree = useRef(0);
@@ -33,7 +35,6 @@ export const useFortuneWheel = ({
     speed: speed,
     spinSpeed: spinSpeed,
     stop: false,
-    initialStop: false,
     minDuration: minDuration,
     maxDuration: maxDuration,
     randomSpeed: 0,
@@ -42,6 +43,26 @@ export const useFortuneWheel = ({
     if (spin.stop) return true;
 
     const deg = filterDegree(degree.current + spin.speed);
+    const slotAmount = spin.slots.length;
+    const p = 360 / slotAmount;
+    const isTouchingEdge = deg % p < spin.speed;
+    const isTouchingEdgeWithThreshold = isTouchingEdge && spin.speed > 0.5;
+
+    if (isTouchingEdgeWithThreshold) {
+      onSpinTouchEdge();
+      const spinArrow = document.getElementById("spin-arrow");
+      if (spinArrow) {
+        spinArrow.style.transform = `rotate(5deg)`;
+        setTimeout(() => {
+          spinArrow.style.transform = `rotate(-5deg)`;
+
+          setTimeout(() => {
+            spinArrow.style.transform = `rotate(0deg)`;
+          }, 20);
+        }, 20);
+      }
+    }
+
     degree.current = deg;
     $("#spin").css("transform", `rotate(${deg}deg)`);
     window.requestAnimationFrame(spinAnim);

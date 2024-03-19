@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -16,7 +17,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="">
-      <body className={inter.className}>{children}</body>
+      <body className={cn(inter.className, "antialiased")}>
+        <div vaul-drawer-wrapper="" className="min-h-[100vh] bg-white">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }
