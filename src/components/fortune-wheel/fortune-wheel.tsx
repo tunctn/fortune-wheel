@@ -113,12 +113,12 @@ export const FortuneWheel = () => {
           </div>
           <div
             className={cn(
-              "absolute bottom-[50px] left-1/2 -translate-x-1/2 text-center opacity-100 transition-all lg:bottom-2",
+              "absolute bottom-[50px] left-1/2 -translate-x-1/2 text-center opacity-100 transition-all lg:bottom-8",
               { "opacity-0": isSpinning || lastWinner === "" },
             )}
           >
             <div className="text-xs font-semibold text-blue-600">Winner</div>
-            <div className="-mt-1 font-semibold">{lastWinner}</div>
+            <div className="-mt-1 text-2xl font-semibold">{lastWinner}</div>
           </div>
         </div>
       </div>
