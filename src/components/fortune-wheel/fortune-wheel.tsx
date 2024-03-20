@@ -10,6 +10,7 @@ import Confetti from "react-dom-confetti";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Drawer } from "vaul";
 import { Button } from "../ui/button";
+import { shortenNumber } from "../utils/human-readable-numbers";
 import { getRandomColor } from "./colors";
 import { List } from "./list";
 import { Spinner } from "./spinner";
@@ -200,7 +201,7 @@ export const FortuneWheel = () => {
                 },
               )}
             >
-              spun {stats.data?.total_spins} times {`<3`}
+              spun {shortenNumber(stats.data?.total_spins)} times {`<3`}
             </div>
 
             <div className="flex w-max gap-2 rounded border px-2 py-1">
