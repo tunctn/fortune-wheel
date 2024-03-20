@@ -49,23 +49,25 @@ export const Spinner = ({ slots, start, isSpinning }: SpinnerProps) => {
             {mounted && <SpinnerSvg slots={slots} />}
           </div>
 
-          <div className="absolute left-1/2 top-0 -mt-5 origin-bottom -translate-x-1/2">
+          <div className="absolute left-1/2 top-0 -mt-5 origin-bottom -translate-x-1/2 scale-y-90">
             <div className=" text-rose-600" id="spin-arrow">
               <svg
+                width="27"
+                height="50"
+                viewBox="0 0 54 100"
+                fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
-                fill="currentColor"
-                viewBox="0 0 16 16"
-                stroke="#ffffff"
-                strokeWidth={1}
-                strokeLinejoin="round"
                 style={{
                   filter:
                     "drop-shadow(0 0 10px rgba(0, 0, 0, 0.1)) drop-shadow(0 0 20px rgba(0, 0, 0, 0.05))",
                 }}
               >
-                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z" />
+                <path
+                  d="M45.9826 2H8.01745C4.16408 2 1.30967 5.58046 2.16829 9.33695L21.1509 92.3856C22.572 98.603 31.428 98.6031 32.8491 92.3856L51.8317 9.33695C52.6903 5.58046 49.8359 2 45.9826 2Z"
+                  fill="currentColor"
+                  stroke="#ffffff"
+                  stroke-width="5"
+                />
               </svg>
             </div>
           </div>
