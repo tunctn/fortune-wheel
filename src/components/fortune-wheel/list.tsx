@@ -6,7 +6,12 @@ import { Input } from "@/components/ui/input";
 import { CirclePlus, MinusCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Control, type UseFieldArrayReturn } from "react-hook-form";
+import { cn } from "@/lib/utils";
+import {
+  Control,
+  useFormContext,
+  type UseFieldArrayReturn,
+} from "react-hook-form";
 import { toast } from "sonner";
 import { getRandomColor } from "./colors";
 import { FortuneWheelForm } from "./fortune-wheel";
@@ -15,13 +20,20 @@ export const List = ({
   control,
   fieldArray,
   isSpinning,
+  withBorder = true,
 }: {
   control: Control<FortuneWheelForm, any>;
   fieldArray: UseFieldArrayReturn<FortuneWheelForm, "options", "id">;
   isSpinning: boolean;
+  withBorder?: boolean;
 }) => {
+  const context = useFormContext();
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
   const { fields, remove, append, insert, update } = fieldArray;
+  const values = context.getValues("options") as {
+    option: string;
+    color: string;
+  }[];
 
   const handleRemove = (index: number) => {
     if (isSpinning) {
@@ -33,9 +45,20 @@ export const List = ({
 
     // If last 2 item, don't remove
     if (fields.length === 2) {
+      toast.error(`You need at least 2 options to spin the wheel!`);
       return;
     }
     remove(index);
+  };
+  const focusTo = (index: number) => {
+    setTimeout(() => {
+      const input = document.getElementById(
+        `fortunewheel-list_option-${index}`,
+      ) as HTMLInputElement;
+
+      input.focus();
+      input.setSelectionRange(0, input.value.length);
+    }, 10);
   };
 
   const handleAdd = () => {
@@ -46,6 +69,8 @@ export const List = ({
       return;
     }
     append({ option: "", color: getRandomColor() });
+
+    focusTo(values.length);
   };
 
   // Paste event
@@ -86,8 +111,61 @@ export const List = ({
     };
   }, [focusedIndex]);
 
+  // Enter and delete key event
+  useEffect(() => {
+    // Track enter key event
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" || e.code === "NumpadEnter" || e.code === "13") {
+        e.preventDefault();
+
+        if (focusedIndex === null) return;
+
+        const value = values[focusedIndex];
+        // Already added
+        if (value.option.trim() === "") {
+          return;
+        }
+
+        // Check if any empty field
+        const emptyField = values.find((v) => v.option.trim() === "");
+        if (emptyField) {
+          const index = values.indexOf(emptyField);
+          focusTo(index);
+        } else {
+          handleAdd();
+        }
+      }
+
+      if (e.key === "Backspace") {
+        if (focusedIndex === null) return;
+
+        const value = values[focusedIndex];
+        // Already added
+        if (value.option.trim() === "") {
+          handleRemove(focusedIndex);
+
+          // Focus to the previous item
+          if (focusedIndex > 0) {
+            e.preventDefault();
+            focusTo(focusedIndex - 1);
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [focusedIndex, values]);
+
   return (
-    <div className="relative flex h-full flex-col gap-0 rounded border">
+    <div
+      className={cn("relative flex h-full flex-col gap-0", {
+        "rounded border": withBorder,
+      })}
+    >
       <div className="flex h-full flex-col gap-1 overflow-y-auto p-2">
         {fields.map((field, index) => {
           return (
@@ -99,6 +177,7 @@ export const List = ({
                   <FormItem className="w-full">
                     <FormControl>
                       <Input
+                        id={`fortunewheel-list_option-${index}`}
                         className="w-full"
                         disabled={isSpinning}
                         {...field}

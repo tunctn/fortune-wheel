@@ -66,7 +66,7 @@ export const Spinner = ({ slots, start, isSpinning }: SpinnerProps) => {
                   d="M45.9826 2H8.01745C4.16408 2 1.30967 5.58046 2.16829 9.33695L21.1509 92.3856C22.572 98.603 31.428 98.6031 32.8491 92.3856L51.8317 9.33695C52.6903 5.58046 49.8359 2 45.9826 2Z"
                   fill="currentColor"
                   stroke="#ffffff"
-                  stroke-width="5"
+                  strokeWidth="5"
                 />
               </svg>
             </div>

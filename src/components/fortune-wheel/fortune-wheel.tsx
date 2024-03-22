@@ -4,11 +4,10 @@ import { FortuneWheelStatsResponse } from "@/app/api/fortune-wheel/route";
 import { Form } from "@/components/ui/form";
 import { cn } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Volume2, VolumeX } from "lucide-react";
+import { CircleX, Volume2, VolumeX } from "lucide-react";
 import { useRef, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Drawer } from "vaul";
 import { Button } from "../ui/button";
 import { shortenNumber } from "../utils/human-readable-numbers";
 import { getRandomColor } from "./colors";
@@ -32,6 +31,8 @@ const DEFAULT_VALUES = [
 const STATS_QUERY_KEY = "fortune-wheel:stats";
 
 export const FortuneWheel = () => {
+  const [sheetOpen, setSheetOpen] = useState(false);
+
   const queryClient = useQueryClient();
   const stats = useQuery({
     queryKey: [STATS_QUERY_KEY],
@@ -173,23 +174,13 @@ export const FortuneWheel = () => {
           )}
 
           <div className="fixed bottom-2 left-0 flex w-full items-center justify-center lg:hidden ">
-            <Drawer.Root shouldScaleBackground>
-              <Drawer.Trigger asChild>
-                <Button className="w-full max-w-[300px]">New option</Button>
-              </Drawer.Trigger>
-              <Drawer.Portal>
-                <Drawer.Overlay className="fixed inset-0 bg-black/40" />
-                <Drawer.Content className="fixed bottom-0 left-0 right-0 mt-24 flex h-[96%] flex-col rounded-t-[10px] bg-zinc-100">
-                  <div className="absolute left-0 top-0 h-full w-full flex-1 rounded-t-[10px] bg-white p-4">
-                    <List
-                      isSpinning={isSpinning}
-                      control={form.control}
-                      fieldArray={fieldArray}
-                    />
-                  </div>
-                </Drawer.Content>
-              </Drawer.Portal>
-            </Drawer.Root>
+            <Button
+              onClick={() => setSheetOpen(true)}
+              className="w-full max-w-[300px]"
+              type="button"
+            >
+              New option
+            </Button>
           </div>
 
           <div className="fixed right-2 top-2 flex flex-col items-end gap-1 lg:bottom-2 lg:left-2 lg:right-auto lg:top-auto lg:items-start ">
@@ -229,7 +220,44 @@ export const FortuneWheel = () => {
             </div>
           </div>
 
-          <div className="hidden h-full lg:block ">
+          {/* Mobile list */}
+          <div
+            className={cn(
+              {
+                hidden: !sheetOpen,
+                "fixed left-0 top-0 z-[10] block h-full w-full bg-white":
+                  sheetOpen,
+              },
+              "lg:hidden",
+            )}
+          >
+            <Button
+              className="absolute right-2 top-2 z-[1]"
+              onClick={() => setSheetOpen(false)}
+              variant="ghost"
+              size="icon"
+            >
+              <CircleX />
+            </Button>
+            <div className="flex h-full flex-col">
+              <div className="py-4 lg:py-0">
+                <div className="text-center text-lg font-semibold">Options</div>
+              </div>
+              <div className="relative grow">
+                <div className="absolute left-0 top-0 h-full w-full">
+                  <List
+                    withBorder={false}
+                    isSpinning={isSpinning}
+                    control={form.control}
+                    fieldArray={fieldArray}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop list */}
+          <div className={cn("hidden", "lg:block lg:h-full")}>
             <List
               isSpinning={isSpinning}
               control={form.control}
