@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { CirclePlus, MinusCircle } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -21,11 +21,13 @@ export const List = ({
   fieldArray,
   isSpinning,
   withBorder = true,
+  itemIdPrefix,
 }: {
   control: Control<FortuneWheelForm, any>;
   fieldArray: UseFieldArrayReturn<FortuneWheelForm, "options", "id">;
   isSpinning: boolean;
   withBorder?: boolean;
+  itemIdPrefix: string;
 }) => {
   const context = useFormContext();
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
@@ -35,33 +37,56 @@ export const List = ({
     color: string;
   }[];
 
-  const handleRemove = (index: number) => {
-    if (isSpinning) {
-      toast.info(`Wait until the winner of this round is announced!`, {
-        icon: "🏅",
-      });
-      return;
-    }
+  const focusTo = useCallback(
+    (index: number) => {
+      setTimeout(() => {
+        const input = document.getElementById(
+          `${itemIdPrefix}-fortunewheel-list_option-${index}`,
+        ) as HTMLInputElement;
 
-    // If last 2 item, don't remove
-    if (fields.length === 2) {
-      toast.error(`You need at least 2 options to spin the wheel!`);
-      return;
-    }
-    remove(index);
-  };
-  const focusTo = (index: number) => {
-    setTimeout(() => {
-      const input = document.getElementById(
-        `fortunewheel-list_option-${index}`,
-      ) as HTMLInputElement;
+        setFocusedIndex(index);
+        input.focus();
+        input.setSelectionRange(0, input.value.length);
+      }, 10);
+    },
+    [itemIdPrefix],
+  );
 
-      input.focus();
-      input.setSelectionRange(0, input.value.length);
-    }, 10);
-  };
+  const handleRemove = useCallback(
+    (index: number, source: "button" | "keypress") => {
+      if (isSpinning) {
+        toast.info(`Wait until the winner of this round is announced!`, {
+          icon: "🏅",
+        });
+        return;
+      }
 
-  const handleAdd = () => {
+      // If last 2 item, don't remove
+      if (fields.length === 2) {
+        if (source === "button") {
+          toast.error(`You need at least 2 options to spin the wheel!`);
+        }
+
+        if (source === "keypress") {
+          const firstOption = values[0].option.trim();
+          const secondOption = values[1].option.trim();
+
+          if (firstOption === "" || secondOption === "") {
+            if (focusedIndex === 1) {
+              focusTo(0);
+              return;
+            }
+          }
+        }
+
+        return;
+      }
+      remove(index);
+    },
+    [remove, focusTo, fields, isSpinning, values, focusedIndex],
+  );
+
+  const handleAdd = useCallback(() => {
     if (isSpinning) {
       toast.info(`Wait until the winner of this round is announced!`, {
         icon: "🏅",
@@ -71,7 +96,7 @@ export const List = ({
     append({ option: "", color: getRandomColor() });
 
     focusTo(values.length);
-  };
+  }, [append, focusTo, isSpinning, values.length]);
 
   // Paste event
   useEffect(() => {
@@ -109,7 +134,7 @@ export const List = ({
     return () => {
       document.removeEventListener("paste", handlePaste);
     };
-  }, [focusedIndex]);
+  }, [focusedIndex, fields, insert, update]);
 
   // Enter and delete key event
   useEffect(() => {
@@ -142,11 +167,10 @@ export const List = ({
         const value = values[focusedIndex];
         // Already added
         if (value.option.trim() === "") {
-          handleRemove(focusedIndex);
+          handleRemove(focusedIndex, "keypress");
 
           // Focus to the previous item
           if (focusedIndex > 0) {
-            e.preventDefault();
             focusTo(focusedIndex - 1);
           }
         }
@@ -158,7 +182,7 @@ export const List = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [focusedIndex, values]);
+  }, [focusedIndex, values, focusTo, handleAdd, handleRemove]);
 
   return (
     <div
@@ -177,7 +201,7 @@ export const List = ({
                   <FormItem className="w-full">
                     <FormControl>
                       <Input
-                        id={`fortunewheel-list_option-${index}`}
+                        id={`${itemIdPrefix}-fortunewheel-list_option-${index}`}
                         className="w-full"
                         disabled={isSpinning}
                         {...field}
@@ -194,7 +218,7 @@ export const List = ({
                 type="button"
                 variant="outline"
                 className="aspect-square"
-                onClick={() => handleRemove(index)}
+                onClick={() => handleRemove(index, "button")}
               >
                 <MinusCircle size={18} />
               </Button>

@@ -246,6 +246,7 @@ export const FortuneWheel = () => {
               <div className="relative grow">
                 <div className="absolute left-0 top-0 h-full w-full">
                   <List
+                    itemIdPrefix="mobile"
                     withBorder={false}
                     isSpinning={isSpinning}
                     control={form.control}
@@ -259,6 +260,7 @@ export const FortuneWheel = () => {
           {/* Desktop list */}
           <div className={cn("hidden", "lg:block lg:h-full")}>
             <List
+              itemIdPrefix="desktop"
               isSpinning={isSpinning}
               control={form.control}
               fieldArray={fieldArray}
