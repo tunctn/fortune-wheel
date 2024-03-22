@@ -4,6 +4,8 @@ import { ReactNode, useMemo } from "react";
 
 export const ViewportContent = ({ children }: { children: ReactNode }) => {
   const viewportContent = useMemo(() => {
+    if (typeof window === "undefined") return;
+
     // Detect the device OS
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     // Set viewport properties based on the device OS
